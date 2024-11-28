@@ -1,134 +1,146 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom"; // Importar useNavigate
+import ReactImageMagnify from "react-image-magnify"; // Importar la biblioteca de zoom
+import { ApiService } from "../../service/ApiService"; // Servicio para la API
+import { useUser } from "../../contexts/UserContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faComment,
-  faShoppingBasket,
-  faStar,
-  faLock,
-  faTruck,
-  faCheck,
-} from "@fortawesome/free-solid-svg-icons";
+import { faLock, faStar, faCheck } from "@fortawesome/free-solid-svg-icons";
 
 export default function DetallesDelProducto() {
+  const { id } = useParams(); // Obtener el ID del producto desde la URL
+  const [producto, setProducto] = useState(null);
+  const [imagenes, setImagenes] = useState([]); // Para almacenar imágenes
+  const [loading, setLoading] = useState(true);
+  const { user, addToCart } = useUser(); // Obtener el usuario logueado y la función de carrito
+  const navigate = useNavigate(); // Para redirigir al carrito
+
+  // Cargar los datos del producto desde la API
+  useEffect(() => {
+    const fetchProducto = async () => {
+      try {
+        const response = await ApiService.getProductoById(id);
+
+        // Parsear imágenes si `imagenUrl` está almacenado como JSON
+        if (response.imagenUrl) {
+          try {
+            const parsedImages = JSON.parse(response.imagenUrl);
+            setImagenes(parsedImages);
+          } catch {
+            setImagenes([response.imagenUrl]); // Si no es JSON, usar como string
+          }
+        }
+
+        setProducto(response);
+      } catch (error) {
+        console.error("Error al cargar el producto:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducto();
+  }, [id]);
+
+  if (loading) {
+    return <div>Cargando...</div>;
+  }
+
+  if (!producto) {
+    return <div>Producto no encontrado.</div>;
+  }
+
+  // Añadir el producto al carrito y redirigir al carrito
+  const handleAddToCart = () => {
+    if (user) {
+      addToCart(producto);
+      navigate("/cart"); // Redirigir al carrito
+    } else {
+      alert("Debes iniciar sesión para añadir productos al carrito.");
+    }
+  };
+
   return (
     <section className="padding-y bg-white shadow-sm">
       <div className="container">
         <div className="row">
+          {/* Galería de imágenes */}
           <aside className="col-lg-5">
             <article className="gallery-wrap">
-              <a href="#" className="img-big-wrap">
-                <img src="/images/product.jpg" className="rounded" />
-              </a>
-              <div className="thumbs-wrap">
-                <a href="#" className="item-thumb">
-                  <img src="/images/product.jpg" />
-                </a>
-                <a href="#" className="item-thumb">
-                  <img src="/images/product.jpg" />
-                </a>
-                <a href="#" className="item-thumb">
-                  <img src="/images/product.jpg" />
-                </a>
-                <a href="#" className="item-thumb">
-                  <img src="/images/product.jpg" />
-                </a>
-                <a href="#" className="item-thumb">
-                  <img src="/images/product.jpg" />
-                </a>
+              {/* Imagen principal con zoom */}
+              <div className="img-big-wrap mb-3">
+                {imagenes.length > 0 ? (
+                  <ReactImageMagnify
+                    {...{
+                      smallImage: {
+                        alt: producto.nombre,
+                        isFluidWidth: true,
+                        src: `http://localhost:3000${imagenes[0]}`,
+                      },
+                      largeImage: {
+                        src: `http://localhost:3000${imagenes[0]}`,
+                        width: 1200,
+                        height: 1200,
+                      },
+                      enlargedImageContainerStyle: { zIndex: 9 }, // Para mostrar el zoom encima de otros elementos
+                    }}
+                  />
+                ) : (
+                  <img
+                    src="/images/product.jpg"
+                    className="rounded img-fluid"
+                    alt="Producto sin imagen"
+                  />
+                )}
               </div>
+
+              {/* Miniaturas de imágenes adicionales */}
+              {imagenes.length > 1 && (
+                <div className="thumbs-wrap d-flex">
+                  {imagenes.map((imagen, index) => (
+                    <img
+                      key={index}
+                      src={`http://localhost:3000${imagen}`}
+                      className="me-2 rounded"
+                      alt={`Imagen ${index + 1}`}
+                      style={{ width: "60px", height: "60px", cursor: "pointer" }}
+                      onClick={() => {
+                        // Al hacer clic en una miniatura, mostrarla como imagen principal
+                        const temp = [...imagenes];
+                        const [clickedImage] = temp.splice(index, 1);
+                        setImagenes([clickedImage, ...temp]);
+                      }}
+                    />
+                  ))}
+                </div>
+              )}
             </article>
           </aside>
+
+          {/* Detalles del producto */}
           <div className="col-lg-4">
             <article>
-              <p className="title h4 mb-1">
-                Productos Ecologicos Para Todo Mundo
-              </p>
-              <div className="rating-wrap mb-2">
-                <ul className="rating-stars">
-                  <li style={{ width: "80%" }} className="stars-active">
-                    <img
-                      src="bootstrap5-ecommerce/images/misc/stars-active.svg"
-                      alt=""
-                    />
-                  </li>
-                  <li>
-                    <img height="520" src="/images/starts-disable.svg" alt="" />
-                  </li>
-                </ul>
-                <b className="label-rating text-warning"> 4.5</b>•
-                <span className="label-rating text-muted">
-                  <FontAwesomeIcon icon={faComment} /> 34 reseñas
-                </span>
-                •
-                <span className="label-rating text-muted">
-                  <FontAwesomeIcon icon={faShoppingBasket} /> 154 pedidos
-                </span>
-              </div>
+              <p className="title h4 mb-1">{producto.nombre}</p>
               <p className="text-success">
-                <FontAwesomeIcon icon={faCheck} /> En stock
+                <FontAwesomeIcon icon={faCheck} />{" "}
+                {producto.stock > 0 ? "En stock" : "Agotado"}
               </p>
               <hr />
-              <div className="mb-4">
-              </div>
-              <div className="mb-4">
-              </div>
-              <ul className="list-dots mb-4">
-                <li>Materiales: Ecologicos</li>
-                <li>Peso: 1200 gramos</li>
-              </ul>
+              <p>Descripción: {producto.descripcion}</p>
+              <p>Precio: {producto.precio} Bs</p>
             </article>
           </div>
+
+          {/* Acciones del producto */}
           <aside className="col-lg-3">
             <div className="card shadow-sm">
               <div className="card-body">
-                <div className="mb-3">
-                  <var className="price h5">815.00 Bs</var>
-                </div>
-                <form>
-                  <div className="d-flex align-items-center mb-3">
-                    <div className="input-group" style={{ maxWidth: "140px" }}>
-                      <button className="btn btn-icon btn-light" type="button">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="24"
-                          height="24"
-                          fill="#999"
-                          viewBox="0 0 24 24"
-                        >
-                          <path d="M19 13H5v-2h14v2z" />
-                        </svg>
-                      </button>
-                      <input
-                        className="form-control text-center"
-                        readonly
-                        placeholder=""
-                        value="14"
-                      />
-                      <button className="btn btn-icon btn-light" type="button">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="24"
-                          height="24"
-                          fill="#999"
-                          viewBox="0 0 24 24"
-                        >
-                          <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
-                </form>
                 <div className="mb-4">
-                  <a href="#" className="btn btn-primary w-100 mb-2">
+                  <button
+                    className="btn btn-primary w-100 mb-2"
+                    onClick={handleAddToCart}
+                  >
                     Añadir al carrito
-                  </a>
-                  <a href="#" className="btn btn-warning w-100 mb-2">
-                    Comprar ahora
-                  </a>
-                  <a href="#" className="btn btn-light w-100">
-                    {" "}
-                    Añadir a la lista de deseos{" "}
-                  </a>
+                  </button>
                 </div>
                 <ul className="list-icon">
                   <li>

@@ -4,7 +4,6 @@ import {
   faFacebook,
   faInstagram,
   faYoutube,
-  faTwitter,
   faCcVisa,
   faCcAmex,
   faCcMastercard,
@@ -22,14 +21,14 @@ export default function PieDePagina(props) {
       <div className="container">
         <section className="footer-main py-5">
           <div className="row">
-            <aside className="col-md-12 col-lg-3 col-xl-3">
-              <article className="me-lg-4">
-                <img src="/logo192.png" className="logo-footer" />
+          <aside className="col-md-12 col-lg-3 col-xl-3">
+            <article className="me-lg-4">
+            <img src="/logo192.png" className="logo-footer" alt="Logo VerdeMarket" />
                 <p className="mt-3">
-                  <br />
+                <br />
                 </p>
-              </article>
-            </aside>
+            </article>
+          </aside>
             <aside className="col-6 col-md-3 col-lg-2 col-xl-2">
               <h6 className="title">VerdeMarket</h6>
               <ul className="list-menu mb-3">
@@ -65,13 +64,13 @@ export default function PieDePagina(props) {
               <h6 className="title">Mis enlaces</h6>
               <ul className="list-menu mb-3">
                 <li>
-                  <a href="/"> Mi cuenta </a>
+                  <a href="/profile"> Mi cuenta </a>
                 </li>
                 <li>
-                  <a href="/"> Mis pedidos </a>
+                  <a href="/orders"> Mis pedidos </a>
                 </li>
                 <li>
-                  <a href="/"> Mi carrito </a>
+                  <a href="/cart"> Mi carrito </a>
                 </li>
               </ul>
             </aside>
@@ -79,22 +78,27 @@ export default function PieDePagina(props) {
               <h6 className="title">Contáctanos</h6>
               <p className="h5 mb-0">78130227 </p>
               <div className="mt-3">
+                {/* Facebook */}
                 <a
                   className="btn btn-icon btn-light"
                   title="Facebook"
                   target="_blank"
-                  href="/"
+                  href="https://www.facebook.com/share/17rZTgAfJC/?mibextid=JRoKGi"
                 >
                   <FontAwesomeIcon icon={faFacebook} />
                 </a>
+
+                {/* Instagram */}
                 <a
                   className="btn btn-icon btn-light"
                   title="Instagram"
                   target="_blank"
-                  href="/"
+                  href="https://www.instagram.com/verdemarket.scz"
                 >
                   <FontAwesomeIcon icon={faInstagram} />
                 </a>
+
+                {/* Youtube */}
                 <a
                   className="btn btn-icon btn-light"
                   title="Youtube"
@@ -102,14 +106,6 @@ export default function PieDePagina(props) {
                   href="/"
                 >
                   <FontAwesomeIcon icon={faYoutube} />
-                </a>
-                <a
-                  className="btn btn-icon btn-light"
-                  title="Twitter"
-                  target="_blank"
-                  href="/"
-                >
-                  <FontAwesomeIcon icon={faTwitter} />
                 </a>
               </div>
             </aside>

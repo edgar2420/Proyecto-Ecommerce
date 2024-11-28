@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/alt-text */
 import React from "react";
 
 export default function SeccionEncabezado() {
@@ -8,7 +9,7 @@ export default function SeccionEncabezado() {
           <div className="col-lg-6 order-lg-1">
             <img
               className="img-fluid mw-100"
-              src="/images/banner.jpg"
+              src="/images/banner.png"
               style={{ objectFit: "contain" }}
             />
           </div>
@@ -19,14 +20,6 @@ export default function SeccionEncabezado() {
                 Con los mejores precios del mercado
               </h1>
               <p className="lead">En VERDE MARKET</p>
-              <a
-                href="/"
-                className="btn btn-primary btn-lg"
-                style={{ marginLeft: "0.2rem" }}
-              >
-                {" "}
-                Descubrir{" "}
-              </a>
             </article>
           </div>
         </div>
